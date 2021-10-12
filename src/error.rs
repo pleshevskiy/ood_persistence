@@ -34,3 +34,10 @@ impl From<bb8_postgres::tokio_postgres::Error> for PersistenceError {
         Self::DbError(Box::new(err))
     }
 }
+
+#[cfg(all(feature = "r2d2_postgres", not(feature = "bb8_postgres")))]
+impl From<r2d2_postgres::postgres::Error> for PersistenceError {
+    fn from(err: r2d2_postgres::postgres::Error) -> Self {
+        Self::DbError(Box::new(err))
+    }
+}
