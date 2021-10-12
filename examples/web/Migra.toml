@@ -1,0 +1,8 @@
+root = "database"
+
+[database]
+connection = "$DATABASE_URL"
+
+[migrations]
+directory = "migrations"
+table_name = "migrations"

@@ -1,0 +1,30 @@
+[package]
+name = "ood_persistence"
+version = "0.1.0"
+edition = "2018"
+authors = ["Dmitriy Pleshevskiy <dmitriy@ideascup.me>"]
+repository = "https://github.com/pleshevskiy/ood_persistence"
+description = "Asynchronous and synchronous interfaces and persistence implementations for your OOD architecture"
+keywords = ["objected", "design", "architecture", "interface", "implementation"]
+categories = ["rust-patterns", "database", "database-implementations"]
+license = "MIT OR Apache-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+async = ["async-trait"]
+sync = []
+
+bb8_postgres = ["async", "bb8", "bb8-postgres"]
+r2d2_postgres = ["sync", "r2d2", "r2d2-postgres"]
+
+[dependencies]
+async-trait = { version = "0.1", optional = true }
+
+bb8 = { version = "0.7", optional = true }
+bb8-postgres = { version = "0.7", optional = true }
+
+r2d2 = { version = "0.8", optional = true }
+r2d2-postgres = { package = "r2d2_postgres", version = "0.18", optional = true }
+
+[workspace]
+members = ["examples/*"]
