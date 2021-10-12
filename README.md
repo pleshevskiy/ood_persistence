@@ -6,7 +6,7 @@ Asynchronous and synchronous interfaces and persistence implementations for your
 
 Add `ood_persistence = { version = "0", features = ["<IMPLEMENTATION_NAME>"] }` as a dependency in `Cargo.toml`.
 
-NOTE: change `<IMPLEMENTATION_NOTE>` to feature name from available list. See `Cargo.toml` for more information.
+NOTE: change `<IMPLEMENTATION_NAME>` to feature name from available list. See `Cargo.toml` for more information.
 
 `Cargo.toml` example:
 
