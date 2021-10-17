@@ -7,4 +7,6 @@ where
     Conn: ConnectionClient,
 {
     async fn get_list_opt(&self, conn: &mut Conn, id: ListId) -> QueryResult<Option<List>>;
+
+    async fn add_list(&self, conn: &mut Conn::Trx<'_>, name: &str) -> QueryResult<List>;
 }

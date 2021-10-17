@@ -15,7 +15,7 @@ dotenv = { version = "0.15", optional = true }
 async-trait = "0.1"
 
 # database
-ood_persistence = { path = "../../", features = ["bb8_postgres"] }
+ood_persistence = { path = "../../", features = ["nightly", "bb8_postgres"] }
 postgres-types = { version = "0.2", features = ["derive"] }
 
 # runtime

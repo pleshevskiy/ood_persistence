@@ -1,8 +1,7 @@
-use crate::error::StdResult;
 use crate::rest::prelude::*;
 use serde::{de, ser};
 
-pub async fn deserialize_request_body<T>(req_body: Body) -> StdResult<T>
+pub async fn deserialize_request_body<T>(req_body: Body) -> ApiResult<T>
 where
     T: de::DeserializeOwned,
 {

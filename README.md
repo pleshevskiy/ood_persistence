@@ -20,6 +20,9 @@ authors = ["Me <user@rust-lang.org>"]
 ood_persistence = { version = "0", features = ["bb8_postgres"] }
 ```
 
+In stable rust channel you can use only connection interface, but if you use nightly channel, add an additional
+"nightly" feature to your `Cargo.toml` and you can use transactions as well.
+
 ## Usage
 
 See examples directory.

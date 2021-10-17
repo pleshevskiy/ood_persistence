@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+#![deny(clippy::all)]
 
 #[macro_use]
 extern crate postgres_types;

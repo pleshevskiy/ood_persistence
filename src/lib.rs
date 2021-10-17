@@ -1,3 +1,6 @@
+#![deny(clippy::all)]
+#![cfg_attr(feature = "nightly", feature(generic_associated_types))]
+
 #[cfg(feature = "async")]
 #[macro_use]
 extern crate async_trait;

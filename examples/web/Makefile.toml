@@ -1,0 +1,5 @@
+[tasks.dev]
+command = "cargo"
+workspace = false
+args = ["run", "--features", "dev"]
+watch = { watch = ["src", "Cargo.toml", '.env'] }

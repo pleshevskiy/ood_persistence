@@ -12,6 +12,11 @@ pub fn create_postgres_list_controller(
     }
 }
 
+#[derive(Debug, Deserialize)]
+pub struct AddListInput {
+    name: String,
+}
+
 pub struct ListController<P>
 where
     P: PersistencePool,
@@ -28,5 +33,9 @@ where
             Some(list_id) => self.list_service.get_list_opt(list_id).await,
             _ => Ok(None),
         }
+    }
+
+    pub async fn add_list(&self, input: AddListInput) -> ApiResult<List> {
+        self.list_service.add_list(&input.name).await
     }
 }

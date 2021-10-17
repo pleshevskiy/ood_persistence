@@ -2,10 +2,10 @@ use crate::config;
 use ood_persistence::bb8_postgres::{tokio_postgres, NoTlsManager};
 pub use ood_persistence::bb8_postgres::{
     NoTlsConnection as PostgresConnection, NoTlsPersistence as PostgresPersistence,
-    NoTlsPool as PostgresPool,
+    NoTlsPool as PostgresPool, Transaction as PostgresTransaction,
 };
 pub use ood_persistence::{
-    asyn::{ConnectionClient, PersistencePool},
+    asyn::{ConnectionClient, PersistencePool, TransactionClient},
     error::Result as QueryResult,
 };
 

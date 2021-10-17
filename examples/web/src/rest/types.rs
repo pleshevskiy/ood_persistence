@@ -9,8 +9,8 @@ pub type QueryParams<'a> = HashMap<&'a str, &'a str>;
 
 #[derive(Debug)]
 pub struct ReqVariables<'params> {
-    body: Body,
-    query_params: QueryParams<'params>,
+    pub body: Body,
+    pub query_params: QueryParams<'params>,
 }
 
 impl<'params> ReqVariables<'params> {
