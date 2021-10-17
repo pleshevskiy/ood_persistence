@@ -16,6 +16,7 @@ pub type NoTlsConnection<'p> = Connection<'p, NoTlsManager>;
 pub type NoTlsInnerConn<'p> = InnerConn<'p, NoTlsManager>;
 pub type NoTlsPool = Pool<NoTlsManager>;
 
+#[must_use]
 pub fn new<M>(pool: &Pool<M>) -> Persistence<M>
 where
     M: bb8::ManageConnection,
