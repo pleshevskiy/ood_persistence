@@ -28,5 +28,8 @@ bb8-postgres = { version = "0.7", optional = true }
 r2d2 = { version = "0.8", optional = true }
 r2d2-postgres = { package = "r2d2_postgres", version = "0.18", optional = true }
 
+[package.metadata.docs.rs]
+all-features = true
+
 [workspace]
 members = ["examples/*"]
