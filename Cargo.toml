@@ -1,6 +1,6 @@
 [package]
 name = "ood_persistence"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2018"
 authors = ["Dmitriy Pleshevskiy <dmitriy@ideascup.me>"]
 repository = "https://github.com/pleshevskiy/ood_persistence"

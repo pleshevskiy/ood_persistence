@@ -7,15 +7,23 @@ pub use bb8::{Pool, PooledConnection};
 pub use bb8_postgres::tokio_postgres;
 pub use bb8_postgres::PostgresConnectionManager as Manager;
 
+/// Inner connection of bb8 implementation.
 pub type InnerConn<'p, M> = PooledConnection<'p, M>;
+/// Inner connection of tokio postgres connection.
 pub type InnerTrx<'p> = tokio_postgres::Transaction<'p>;
 
+/// Alias for bb8 postgres no tls manager.
 pub type NoTlsManager = Manager<tokio_postgres::NoTls>;
+/// Alias for bb8 postgres no tls persistence.
 pub type NoTlsPersistence<'p> = Persistence<'p, NoTlsManager>;
+/// Alias for bb8 postgres no tls connection.
 pub type NoTlsConnection<'p> = Connection<'p, NoTlsManager>;
+/// Alias for bb8 postgres no tls inner connection.
 pub type NoTlsInnerConn<'p> = InnerConn<'p, NoTlsManager>;
+/// Alias for bb8 postgres no tls pool.
 pub type NoTlsPool = Pool<NoTlsManager>;
 
+/// It creates new persistence of bb8 postgres implementation.
 #[must_use]
 pub fn new<M>(pool: &Pool<M>) -> Persistence<M>
 where
@@ -24,6 +32,7 @@ where
     Persistence(pool)
 }
 
+/// Persistence wrap over bb8 pool.
 #[derive(Clone)]
 pub struct Persistence<'p, M>(&'p Pool<M>)
 where
@@ -42,6 +51,7 @@ impl<'p> PersistencePool for NoTlsPersistence<'p> {
     }
 }
 
+/// Connection wrap over bb8 postgres inner connection.
 pub struct Connection<'p, M>(InnerConn<'p, M>)
 where
     M: bb8::ManageConnection;
@@ -67,6 +77,9 @@ impl<'me> ConnectionClient for NoTlsConnection<'me> {
     }
 }
 
+/// Transaction wrap over tokio_postgres transaction.
+///
+/// **Note:** requires nightly rust channel and enabling the `nightly` feature.
 #[cfg(feature = "nightly")]
 pub struct Transaction<'p>(InnerTrx<'p>);
 

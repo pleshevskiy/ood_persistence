@@ -7,15 +7,23 @@ pub use r2d2::{Pool, PooledConnection};
 pub use r2d2_postgres::postgres;
 pub use r2d2_postgres::PostgresConnectionManager as Manager;
 
+/// Inner connection of r2d2 implementation.
 pub type InnerConn<M> = PooledConnection<M>;
+/// Inner connection of postgres connection.
 pub type InnerTrx<'t> = postgres::Transaction<'t>;
 
+/// Alias for r2d2 postgres no tls manager.
 pub type NoTlsManager = Manager<postgres::NoTls>;
+/// Alias for r2d2 postgres no tls persistence.
 pub type NoTlsPersistence<'p> = Persistence<'p, NoTlsManager>;
+/// Alias for r2d2 postgres no tls connection.
 pub type NoTlsConnection = Connection<NoTlsManager>;
+/// Alias for r2d2 postgres no tls inner connection.
 pub type NoTlsInnerConn = InnerConn<NoTlsManager>;
+/// Alias for r2d2 postgres no tls pool.
 pub type NoTlsPool = Pool<NoTlsManager>;
 
+/// It creates new persistence of r2d2 postgres implementation.
 pub fn new<M>(pool: &Pool<M>) -> Persistence<M>
 where
     M: r2d2::ManageConnection,
@@ -23,6 +31,7 @@ where
     Persistence(pool)
 }
 
+/// Persistence wrap over r2d2 pool.
 #[derive(Clone)]
 pub struct Persistence<'p, M>(&'p Pool<M>)
 where
@@ -39,6 +48,7 @@ impl<'p> PersistencePool for NoTlsPersistence<'p> {
     }
 }
 
+/// Connection wrap over r2d2 postgres inner connection.
 pub struct Connection<M>(InnerConn<M>)
 where
     M: r2d2::ManageConnection;
@@ -62,6 +72,9 @@ impl ConnectionClient for NoTlsConnection {
     }
 }
 
+/// Transaction wrap over postgres transaction.
+///
+/// **Note:** requires nightly rust channel and enabling the `nightly` feature.
 #[cfg(feature = "nightly")]
 pub struct Transaction<'me>(InnerTrx<'me>);
 
