@@ -33,3 +33,11 @@ all-features = true
 
 [workspace]
 members = ["examples/*"]
+
+[[example]]
+name = "simple"
+required-features = ["r2d2_postgres"]
+
+[[example]]
+name = "transaction"
+required-features = ["r2d2_postgres", "nightly"]
