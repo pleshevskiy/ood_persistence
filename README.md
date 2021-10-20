@@ -1,5 +1,9 @@
 # OOD Persistence
 
+[![Crates.io](https://img.shields.io/crates/v/ood_persistence)](https://crates.io/crates/ood_persistence)
+[![Documentation](https://docs.rs/ood_persistence/badge.svg)](https://docs.rs/ood_persistence)
+[![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
+
 Asynchronous and synchronous interfaces and persistence implementations for your OOD architecture
 
 ## Installation
