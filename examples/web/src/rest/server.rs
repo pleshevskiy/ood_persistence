@@ -1,6 +1,6 @@
 use super::server_utils;
 use crate::config;
-use crate::db::persistence::create_postgres_pool;
+use crate::db::persistence::PostgresPool;
 use crate::error::SyncStdError;
 use crate::rest::context::{RestGlobalContext, RestReqContext};
 use crate::rest::prelude::*;
@@ -10,16 +10,7 @@ use hyper::service::{make_service_fn, service_fn};
 use hyper::Server;
 use std::sync::Arc;
 
-/// Waits for the Ctrl+C signal for graceful shutdown backend
-async fn shutdown_signal() {
-    tokio::signal::ctrl_c()
-        .await
-        .expect("failed to install CTRL+C signal handler");
-}
-
-pub async fn start_server() -> StdResult<()> {
-    let pool = create_postgres_pool().await;
-    // let persistence = ood_persistence::bb8_postgres::new(&pool);
+pub async fn start_server(pool: PostgresPool) -> StdResult<()> {
     let context = Arc::new(RestGlobalContext { pool });
 
     let new_service = make_service_fn(move |_| {
@@ -42,11 +33,11 @@ pub async fn start_server() -> StdResult<()> {
     Ok(())
 }
 
-fn split_request_uri_path(uri_path: &str) -> Vec<&str> {
-    uri_path
-        .split('/')
-        .filter(|part| !part.is_empty())
-        .collect()
+/// Waits for the Ctrl+C signal for graceful shutdown backend
+async fn shutdown_signal() {
+    tokio::signal::ctrl_c()
+        .await
+        .expect("failed to install CTRL+C signal handler");
 }
 
 async fn process_request(
@@ -70,7 +61,6 @@ async fn process_request(
             StatusCode::INTERNAL_SERVER_ERROR,
             RestResponseData::<serde_json::Value>::error(REST_INTERNAL_SERVER_ERROR),
         )
-        // TODO(pleshevskiy): investigate why `Send` is not implemented
         .unwrap(),
         Ok(res) => res,
     };
@@ -92,4 +82,11 @@ async fn process_request(
     }
 
     Ok(res)
+}
+
+fn split_request_uri_path(uri_path: &str) -> Vec<&str> {
+    uri_path
+        .split('/')
+        .filter(|part| !part.is_empty())
+        .collect()
 }

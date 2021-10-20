@@ -13,5 +13,5 @@ pub mod config;
 pub mod error;
 
 mod app;
-mod db;
+pub mod db;
 pub mod rest;
