@@ -2,43 +2,26 @@ use crate::error;
 #[cfg(feature = "nightly")]
 use crate::syn::TransactionClient;
 use crate::syn::{ConnectionClient, PersistencePool};
-
 pub use r2d2::{Pool, PooledConnection};
-pub use r2d2_postgres::postgres;
-pub use r2d2_postgres::PostgresConnectionManager as Manager;
+pub use r2d2_sqlite::rusqlite;
+pub use r2d2_sqlite::SqliteConnectionManager as Manager;
 
 /// Inner connection of r2d2 implementation.
-pub type InnerConn<M> = PooledConnection<M>;
-/// Inner transaction of postgres.
-pub type InnerTrx<'t> = postgres::Transaction<'t>;
+pub type InnerConn = PooledConnection<Manager>;
+/// Inner transaction of rusqlite.
+pub type InnerTrx<'t> = rusqlite::Transaction<'t>;
 
-/// Alias for r2d2 postgres no tls manager.
-pub type NoTlsManager = Manager<postgres::NoTls>;
-/// Alias for r2d2 postgres no tls persistence.
-pub type NoTlsPersistence<'p> = Persistence<'p, NoTlsManager>;
-/// Alias for r2d2 postgres no tls connection.
-pub type NoTlsConnection = Connection<NoTlsManager>;
-/// Alias for r2d2 postgres no tls inner connection.
-pub type NoTlsInnerConn = InnerConn<NoTlsManager>;
-/// Alias for r2d2 postgres no tls pool.
-pub type NoTlsPool = Pool<NoTlsManager>;
-
-/// It creates new persistence of r2d2 postgres implementation.
-pub fn new<M>(pool: &Pool<M>) -> Persistence<M>
-where
-    M: r2d2::ManageConnection,
-{
+/// It creates new persistence of r2d2 sqlite implementation.
+pub fn new(pool: &Pool<Manager>) -> Persistence {
     Persistence(pool)
 }
 
 /// Persistence wrap over r2d2 pool.
 #[derive(Clone)]
-pub struct Persistence<'p, M>(&'p Pool<M>)
-where
-    M: r2d2::ManageConnection;
+pub struct Persistence<'p>(&'p Pool<Manager>);
 
-impl PersistencePool for NoTlsPersistence<'_> {
-    type Conn = NoTlsConnection;
+impl PersistencePool for Persistence<'_> {
+    type Conn = Connection;
 
     fn get_connection(&self) -> error::Result<Self::Conn> {
         self.0
@@ -48,13 +31,11 @@ impl PersistencePool for NoTlsPersistence<'_> {
     }
 }
 
-/// Connection wrap over r2d2 postgres inner connection.
-pub struct Connection<M>(InnerConn<M>)
-where
-    M: r2d2::ManageConnection;
+/// Connection wrap over r2d2 sqlite inner connection.
+pub struct Connection(InnerConn);
 
-impl ConnectionClient for NoTlsConnection {
-    type InnerConn = NoTlsInnerConn;
+impl ConnectionClient for Connection {
+    type InnerConn = InnerConn;
 
     #[cfg(feature = "nightly")]
     type Trx<'t> = Transaction<'t>;
@@ -72,38 +53,45 @@ impl ConnectionClient for NoTlsConnection {
     }
 }
 
-/// Transaction wrap over postgres transaction.
+/// Transaction wrap over rusqlite transaction.
 ///
 /// **Note:** requires nightly rust channel and enabling the `nightly` feature.
-#[cfg(feature = "nightly")]
+///
+/// # Limits
+///
+/// It doesn't support nested transaction, because the transaction in `rusqlite`
+/// requires DerefMut, which cannot be implemented at the moment. 😣
 pub struct Transaction<'me>(InnerTrx<'me>);
 
-#[cfg(feature = "nightly")]
 impl<'me> ConnectionClient for Transaction<'me> {
     type InnerConn = InnerTrx<'me>;
 
+    #[cfg(feature = "nightly")]
     type Trx<'t> = Transaction<'t>;
 
     fn inner(&mut self) -> &mut Self::InnerConn {
         &mut self.0
     }
 
+    #[cfg(feature = "nightly")]
     fn start_transaction(&mut self) -> error::Result<Self::Trx<'_>> {
-        self.0
-            .transaction()
-            .map_err(|_| error::PersistenceError::UpgradeToTransaction)
-            .map(Transaction)
+        // At the moment we cannot implement nested transaction because
+        // the transaction in `rusqlite` requires DerefMut, which cannot be
+        // implemented yet 😣
+        unimplemented!()
+        // self.0
+        //     .transaction()
+        //     .map_err(|_| error::PersistenceError::UpgradeToTransaction)
+        //     .map(Transaction)
     }
 }
 
-#[cfg(feature = "nightly")]
 impl TransactionClient for Transaction<'_> {
     fn commit(self) -> error::Result<()> {
         self.0
             .commit()
             .map_err(|_| error::PersistenceError::CommitTransaction)
     }
-
     fn rollback(self) -> error::Result<()> {
         self.0
             .rollback()

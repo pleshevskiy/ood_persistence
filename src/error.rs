@@ -1,6 +1,14 @@
 use std::error;
 use std::fmt;
 
+#[cfg(feature = "bb8_postgres")]
+use bb8_postgres::tokio_postgres::Error as PostgresError;
+#[cfg(all(feature = "r2d2_postgres", not(feature = "bb8_postgres")))]
+use r2d2_postgres::postgres::Error as PostgresError;
+
+#[cfg(feature = "r2d2_sqlite")]
+use r2d2_sqlite::rusqlite::Error as RusqliteError;
+
 /// A helper type for any result with persistence error.
 ///
 /// Use this type in your repository or in something else that implements methods for your persistence.
@@ -45,16 +53,16 @@ impl fmt::Display for PersistenceError {
 
 impl error::Error for PersistenceError {}
 
-#[cfg(feature = "bb8_postgres")]
-impl From<bb8_postgres::tokio_postgres::Error> for PersistenceError {
-    fn from(err: bb8_postgres::tokio_postgres::Error) -> Self {
+#[cfg(any(feature = "r2d2_postgres", feature = "bb8_postgres"))]
+impl From<PostgresError> for PersistenceError {
+    fn from(err: PostgresError) -> Self {
         Self::DbError(Box::new(err))
     }
 }
 
-#[cfg(all(feature = "r2d2_postgres", not(feature = "bb8_postgres")))]
-impl From<r2d2_postgres::postgres::Error> for PersistenceError {
-    fn from(err: r2d2_postgres::postgres::Error) -> Self {
+#[cfg(feature = "r2d2_sqlite")]
+impl From<RusqliteError> for PersistenceError {
+    fn from(err: RusqliteError) -> Self {
         Self::DbError(Box::new(err))
     }
 }
