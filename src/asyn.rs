@@ -1,5 +1,3 @@
-use crate::error;
-
 /// The pool is one of the main features to be realized in persistence.
 ///
 /// Any implementation (database, file storage, memory or others) must be able to get a connection

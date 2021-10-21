@@ -1,4 +1,3 @@
-use crate::error;
 #[cfg(feature = "nightly")]
 use crate::syn::TransactionClient;
 use crate::syn::{ConnectionClient, PersistencePool};

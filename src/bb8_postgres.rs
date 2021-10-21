@@ -1,7 +1,6 @@
 #[cfg(feature = "nightly")]
 use crate::asyn::TransactionClient;
 use crate::asyn::{ConnectionClient, PersistencePool};
-use crate::error;
 
 pub use bb8::{Pool, PooledConnection};
 pub use bb8_postgres::tokio_postgres;
