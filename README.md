@@ -29,7 +29,23 @@ In stable rust channel you can use only connection interface, but if you use nig
 
 ## Usage
 
-See examples directory.
+```rust
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // create pool to our database
+    let pool = create_postgres_pool();
+    // initialize persistence
+    let persistence = ood_persistence::r2d2_postgres::new(&pool);
+    // get connection to database
+    let mut conn = persistence.get_connection()?;
+    // we can query something
+    let res: i32 = conn.inner().query_one("select 1", &[])?.get(0);
+    assert_eq!(res, 1);
+
+    Ok(())
+}
+```
+
+See examples directory for more information.
 
 
 ## Contributors
