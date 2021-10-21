@@ -9,6 +9,7 @@ pub use r2d2_postgres::PostgresConnectionManager as Manager;
 /// Inner connection of r2d2 implementation.
 pub type InnerConn<M> = PooledConnection<M>;
 /// Inner transaction of postgres.
+#[cfg(feature = "nightly")]
 pub type InnerTrx<'t> = postgres::Transaction<'t>;
 
 /// Alias for r2d2 postgres no tls manager.

@@ -9,6 +9,7 @@ pub use bb8_postgres::PostgresConnectionManager as Manager;
 /// Inner connection of bb8 implementation.
 pub type InnerConn<'p, M> = PooledConnection<'p, M>;
 /// Inner connection of tokio postgres connection.
+#[cfg(feature = "nightly")]
 pub type InnerTrx<'p> = tokio_postgres::Transaction<'p>;
 
 /// Alias for bb8 postgres no tls manager.

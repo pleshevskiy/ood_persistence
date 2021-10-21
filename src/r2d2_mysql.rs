@@ -8,6 +8,7 @@ pub use r2d2_mysql::MysqlConnectionManager as Manager;
 /// Inner connection of r2d2 implementation.
 pub type InnerConn = PooledConnection<Manager>;
 /// Inner transaction of `mysql`.
+#[cfg(feature = "nightly")]
 pub type InnerTrx<'t> = mysql::Transaction<'t>;
 
 /// It creates new persistence of r2d2 mysql implementation.
@@ -60,8 +61,10 @@ impl ConnectionClient for Connection {
 /// # Limits
 ///
 /// Mysql doesn't support nested transactions
+#[cfg(feature = "nightly")]
 pub struct Transaction<'me>(InnerTrx<'me>);
 
+#[cfg(feature = "nightly")]
 impl<'me> ConnectionClient for Transaction<'me> {
     type InnerConn = InnerTrx<'me>;
 
@@ -79,6 +82,7 @@ impl<'me> ConnectionClient for Transaction<'me> {
     }
 }
 
+#[cfg(feature = "nightly")]
 impl TransactionClient for Transaction<'_> {
     fn commit(self) -> crate::Result<()> {
         self.0.commit().map_err(|_| crate::Error::CommitTransaction)

@@ -8,6 +8,7 @@ pub use r2d2_sqlite::SqliteConnectionManager as Manager;
 /// Inner connection of r2d2 implementation.
 pub type InnerConn = PooledConnection<Manager>;
 /// Inner transaction of rusqlite.
+#[cfg(feature = "nightly")]
 pub type InnerTrx<'t> = rusqlite::Transaction<'t>;
 
 /// It creates new persistence of r2d2 sqlite implementation.
@@ -61,8 +62,10 @@ impl ConnectionClient for Connection {
 ///
 /// It doesn't support nested transaction, because the transaction in `rusqlite`
 /// requires `DerefMut`, which cannot be implemented at the moment. 😣
+#[cfg(feature = "nightly")]
 pub struct Transaction<'me>(InnerTrx<'me>);
 
+#[cfg(feature = "nightly")]
 impl<'me> ConnectionClient for Transaction<'me> {
     type InnerConn = InnerTrx<'me>;
 
@@ -86,6 +89,7 @@ impl<'me> ConnectionClient for Transaction<'me> {
     }
 }
 
+#[cfg(feature = "nightly")]
 impl TransactionClient for Transaction<'_> {
     fn commit(self) -> crate::Result<()> {
         self.0.commit().map_err(|_| crate::Error::CommitTransaction)
