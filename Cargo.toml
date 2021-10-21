@@ -18,6 +18,7 @@ sync = []
 
 bb8_postgres = ["async", "bb8", "bb8-postgres"]
 r2d2_postgres = ["sync", "r2d2", "r2d2-postgres"]
+r2d2_sqlite = ["sync", "r2d2", "r2d2-sqlite"]
 
 [dependencies]
 async-trait = { version = "0.1", optional = true }
@@ -27,6 +28,7 @@ bb8-postgres = { version = "0.7", optional = true }
 
 r2d2 = { version = "0.8", optional = true }
 r2d2-postgres = { package = "r2d2_postgres", version = "0.18", optional = true }
+r2d2-sqlite = { package = "r2d2_sqlite", version = "0.19", optional = true }
 
 [package.metadata.docs.rs]
 all-features = true

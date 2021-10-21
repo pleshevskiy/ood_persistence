@@ -57,7 +57,7 @@ pub use bb8;
 
 /// This module contains implementation for async interface of postgres database.
 ///
-/// The implementation uses bb8 as the pool and tokio_postgres as the client.
+/// The implementation uses `bb8` as the pool and `tokio_postgres` as the client.
 ///
 /// **Note:** This mod requires enabling the `bb8_postgres` feature
 #[cfg(feature = "bb8_postgres")]
@@ -70,11 +70,19 @@ pub use r2d2;
 
 /// This module contains implementation for sync interface of postgres database.
 ///
-/// The implementation uses r2d2 as the pool and postgres as the client.
+/// The implementation uses `r2d2` as the pool and `postgres` as the client.
 ///
 /// **Note:** This mod requires enabling the `r2d2_postgres` feature.
 #[cfg(feature = "r2d2_postgres")]
 pub mod r2d2_postgres;
+
+/// This module contains implementation for sync interface of sqlite database.
+///
+/// The implementation uses `r2d2` as the pool and `rusqlite` as the client.
+///
+/// **Note:** This mod requires enabling the `r2d2_sqlite` feature.
+#[cfg(feature = "r2d2_sqlite")]
+pub mod r2d2_sqlite;
 
 /// This module contains implementations for errors and result, that this
 /// crate uses
