@@ -104,6 +104,14 @@ pub mod r2d2_postgres;
 #[cfg(feature = "r2d2_sqlite")]
 pub mod r2d2_sqlite;
 
+/// This module contains implementation for sync interface of mysql database.
+///
+/// The implementation uses `r2d2` as the pool and `mysql` as the client.
+///
+/// **Note:** This mod requires enabling the `r2d2_mysql` feature.
+#[cfg(feature = "r2d2_mysql")]
+pub mod r2d2_mysql;
+
 /// This module contains implementations for errors and result, that this
 /// crate uses
 pub mod error;

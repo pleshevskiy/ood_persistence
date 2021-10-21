@@ -8,6 +8,9 @@ use r2d2_postgres::postgres::Error as PostgresError;
 #[cfg(feature = "r2d2_sqlite")]
 use r2d2_sqlite::rusqlite::Error as RusqliteError;
 
+#[cfg(feature = "r2d2_mysql")]
+use r2d2_mysql::mysql::Error as MysqlError;
+
 /// A helper type for any result with persistence error.
 ///
 /// Use this type in your repository or in something else that implements methods for your persistence.
@@ -69,6 +72,13 @@ impl From<PostgresError> for Error {
 #[cfg(feature = "r2d2_sqlite")]
 impl From<RusqliteError> for Error {
     fn from(err: RusqliteError) -> Self {
+        Self::PersistenceError(Box::new(err))
+    }
+}
+
+#[cfg(feature = "r2d2_mysql")]
+impl From<MysqlError> for Error {
+    fn from(err: MysqlError) -> Self {
         Self::PersistenceError(Box::new(err))
     }
 }
