@@ -45,3 +45,17 @@ cargo make dev
 ```
 
 [cargo make]: https://github.com/sagiegurari/cargo-make
+
+## Usage
+
+Create new list
+
+```sh
+xh http://localhost:32444/api/lists/ name=hello
+```
+
+Get list
+
+```sh
+xh http://localhost:32444/api/lists/1
+```
