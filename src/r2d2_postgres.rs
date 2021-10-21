@@ -1,4 +1,3 @@
-use crate::error;
 #[cfg(feature = "nightly")]
 use crate::syn::TransactionClient;
 use crate::syn::{ConnectionClient, PersistencePool};
@@ -24,6 +23,7 @@ pub type NoTlsInnerConn = InnerConn<NoTlsManager>;
 pub type NoTlsPool = Pool<NoTlsManager>;
 
 /// It creates new persistence of r2d2 postgres implementation.
+#[must_use]
 pub fn new<M>(pool: &Pool<M>) -> Persistence<M>
 where
     M: r2d2::ManageConnection,
@@ -40,10 +40,10 @@ where
 impl PersistencePool for NoTlsPersistence<'_> {
     type Conn = NoTlsConnection;
 
-    fn get_connection(&self) -> error::Result<Self::Conn> {
+    fn get_connection(&self) -> crate::Result<Self::Conn> {
         self.0
             .get()
-            .map_err(|_| error::PersistenceError::GetConnection)
+            .map_err(|_| crate::Error::GetConnection)
             .map(Connection)
     }
 }
@@ -64,10 +64,10 @@ impl ConnectionClient for NoTlsConnection {
     }
 
     #[cfg(feature = "nightly")]
-    fn start_transaction(&mut self) -> error::Result<Self::Trx<'_>> {
+    fn start_transaction(&mut self) -> crate::Result<Self::Trx<'_>> {
         self.0
             .transaction()
-            .map_err(|_| error::PersistenceError::UpgradeToTransaction)
+            .map_err(|_| crate::Error::UpgradeToTransaction)
             .map(Transaction)
     }
 }
@@ -88,25 +88,23 @@ impl<'me> ConnectionClient for Transaction<'me> {
         &mut self.0
     }
 
-    fn start_transaction(&mut self) -> error::Result<Self::Trx<'_>> {
+    fn start_transaction(&mut self) -> crate::Result<Self::Trx<'_>> {
         self.0
             .transaction()
-            .map_err(|_| error::PersistenceError::UpgradeToTransaction)
+            .map_err(|_| crate::Error::UpgradeToTransaction)
             .map(Transaction)
     }
 }
 
 #[cfg(feature = "nightly")]
 impl TransactionClient for Transaction<'_> {
-    fn commit(self) -> error::Result<()> {
-        self.0
-            .commit()
-            .map_err(|_| error::PersistenceError::CommitTransaction)
+    fn commit(self) -> crate::Result<()> {
+        self.0.commit().map_err(|_| crate::Error::CommitTransaction)
     }
 
-    fn rollback(self) -> error::Result<()> {
+    fn rollback(self) -> crate::Result<()> {
         self.0
             .rollback()
-            .map_err(|_| error::PersistenceError::RollbackTransaction)
+            .map_err(|_| crate::Error::RollbackTransaction)
     }
 }

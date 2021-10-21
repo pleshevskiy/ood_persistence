@@ -1,4 +1,3 @@
-use std::error;
 use std::fmt;
 
 #[cfg(feature = "bb8_postgres")]
@@ -12,11 +11,11 @@ use r2d2_sqlite::rusqlite::Error as RusqliteError;
 /// A helper type for any result with persistence error.
 ///
 /// Use this type in your repository or in something else that implements methods for your persistence.
-pub type Result<T> = std::result::Result<T, PersistenceError>;
+pub type Result<T> = std::result::Result<T, Error>;
 
 /// All supported kinds of persistence error
 #[derive(Debug)]
-pub enum PersistenceError {
+pub enum Error {
     /// Returns if we cannot get a connection from pool.
     GetConnection,
     /// Returns if we cannot upgrade connection to transaction.
@@ -28,41 +27,37 @@ pub enum PersistenceError {
     /// Returns if we cannot rolls back transaction.
     #[cfg(feature = "nightly")]
     RollbackTransaction,
-    /// Rest database errors contains here.
-    DbError(Box<dyn std::error::Error>),
+    /// Rest persistence errors contains here.
+    PersistenceError(Box<dyn std::error::Error>),
 }
 
-impl fmt::Display for PersistenceError {
+impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            PersistenceError::GetConnection => f.write_str("Cannot get connection"),
+            Error::GetConnection => f.write_str("Cannot get connection"),
             #[cfg(feature = "nightly")]
-            PersistenceError::UpgradeToTransaction => {
-                f.write_str("Cannot upgrade connection to transaction")
-            }
+            Error::UpgradeToTransaction => f.write_str("Cannot upgrade connection to transaction"),
             #[cfg(feature = "nightly")]
-            PersistenceError::CommitTransaction => {
-                f.write_str("Cannot commit changes of transaction")
-            }
+            Error::CommitTransaction => f.write_str("Cannot commit changes of transaction"),
             #[cfg(feature = "nightly")]
-            PersistenceError::RollbackTransaction => f.write_str("Cannot rolls transaction back"),
-            PersistenceError::DbError(err) => write!(f, "DbError: {}", err),
+            Error::RollbackTransaction => f.write_str("Cannot rolls transaction back"),
+            Error::PersistenceError(err) => write!(f, "DbError: {}", err),
         }
     }
 }
 
-impl error::Error for PersistenceError {}
+impl std::error::Error for Error {}
 
 #[cfg(any(feature = "r2d2_postgres", feature = "bb8_postgres"))]
-impl From<PostgresError> for PersistenceError {
+impl From<PostgresError> for Error {
     fn from(err: PostgresError) -> Self {
-        Self::DbError(Box::new(err))
+        Self::PersistenceError(Box::new(err))
     }
 }
 
 #[cfg(feature = "r2d2_sqlite")]
-impl From<RusqliteError> for PersistenceError {
+impl From<RusqliteError> for Error {
     fn from(err: RusqliteError) -> Self {
-        Self::DbError(Box::new(err))
+        Self::PersistenceError(Box::new(err))
     }
 }

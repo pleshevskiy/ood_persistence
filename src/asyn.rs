@@ -14,7 +14,7 @@ pub trait PersistencePool: Send + Sync {
     /// # Errors
     ///
     /// Returns PersistenceError if pool cannot get a connection.
-    async fn get_connection(&self) -> error::Result<Self::Conn>;
+    async fn get_connection(&self) -> crate::Result<Self::Conn>;
 }
 
 /// Connection client knows about the inner connection, and also knows how to create transactions.
@@ -40,7 +40,7 @@ pub trait ConnectionClient {
     ///
     /// Returns PersistenceError if connection cannot update to transaction.
     #[cfg(feature = "nightly")]
-    async fn start_transaction(&mut self) -> error::Result<Self::Trx<'_>>;
+    async fn start_transaction(&mut self) -> crate::Result<Self::Trx<'_>>;
 }
 
 /// Transaction client is updated connection client that can additionally commit and rollback data
@@ -55,12 +55,12 @@ pub trait TransactionClient: ConnectionClient {
     /// # Errors
     ///
     /// Returns PersistenceError if transaction cannot commit
-    async fn commit(self) -> error::Result<()>;
+    async fn commit(self) -> crate::Result<()>;
 
     /// Rolls the transaction back, discarding all changes made within it.
     ///
     /// # Errors
     ///
     /// Returns PersistenceError if transaction cannot rolls back.
-    async fn rollback(self) -> error::Result<()>;
+    async fn rollback(self) -> crate::Result<()>;
 }

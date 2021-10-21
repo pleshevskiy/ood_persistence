@@ -42,11 +42,11 @@ where
 impl<'p> PersistencePool for NoTlsPersistence<'p> {
     type Conn = NoTlsConnection<'p>;
 
-    async fn get_connection(&self) -> error::Result<Self::Conn> {
+    async fn get_connection(&self) -> crate::Result<Self::Conn> {
         self.0
             .get()
             .await
-            .map_err(|_| error::PersistenceError::GetConnection)
+            .map_err(|_| crate::Error::GetConnection)
             .map(Connection)
     }
 }
@@ -68,16 +68,16 @@ impl<'me> ConnectionClient for NoTlsConnection<'me> {
     }
 
     #[cfg(feature = "nightly")]
-    async fn start_transaction(&mut self) -> error::Result<Self::Trx<'_>> {
+    async fn start_transaction(&mut self) -> crate::Result<Self::Trx<'_>> {
         self.0
             .transaction()
             .await
-            .map_err(|_| error::PersistenceError::UpgradeToTransaction)
+            .map_err(|_| crate::Error::UpgradeToTransaction)
             .map(Transaction)
     }
 }
 
-/// Transaction wrap over tokio_postgres transaction.
+/// Transaction wrap over `tokio_postgres` transaction.
 ///
 /// **Note:** requires nightly rust channel and enabling the `nightly` feature.
 #[cfg(feature = "nightly")]
@@ -94,11 +94,11 @@ impl<'me> ConnectionClient for Transaction<'me> {
         &mut self.0
     }
 
-    async fn start_transaction(&mut self) -> error::Result<Self::Trx<'_>> {
+    async fn start_transaction(&mut self) -> crate::Result<Self::Trx<'_>> {
         self.0
             .transaction()
             .await
-            .map_err(|_| error::PersistenceError::UpgradeToTransaction)
+            .map_err(|_| crate::Error::UpgradeToTransaction)
             .map(Transaction)
     }
 }
@@ -106,17 +106,17 @@ impl<'me> ConnectionClient for Transaction<'me> {
 #[cfg(feature = "nightly")]
 #[async_trait]
 impl<'me> TransactionClient for Transaction<'me> {
-    async fn commit(self) -> error::Result<()> {
+    async fn commit(self) -> crate::Result<()> {
         self.0
             .commit()
             .await
-            .map_err(|_| error::PersistenceError::CommitTransaction)
+            .map_err(|_| crate::Error::CommitTransaction)
     }
 
-    async fn rollback(self) -> error::Result<()> {
+    async fn rollback(self) -> crate::Result<()> {
         self.0
             .rollback()
             .await
-            .map_err(|_| error::PersistenceError::RollbackTransaction)
+            .map_err(|_| crate::Error::RollbackTransaction)
     }
 }

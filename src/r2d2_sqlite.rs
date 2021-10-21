@@ -12,6 +12,7 @@ pub type InnerConn = PooledConnection<Manager>;
 pub type InnerTrx<'t> = rusqlite::Transaction<'t>;
 
 /// It creates new persistence of r2d2 sqlite implementation.
+#[must_use]
 pub fn new(pool: &Pool<Manager>) -> Persistence {
     Persistence(pool)
 }
@@ -23,10 +24,10 @@ pub struct Persistence<'p>(&'p Pool<Manager>);
 impl PersistencePool for Persistence<'_> {
     type Conn = Connection;
 
-    fn get_connection(&self) -> error::Result<Self::Conn> {
+    fn get_connection(&self) -> crate::Result<Self::Conn> {
         self.0
             .get()
-            .map_err(|_| error::PersistenceError::GetConnection)
+            .map_err(|_| crate::Error::GetConnection)
             .map(Connection)
     }
 }
@@ -45,10 +46,10 @@ impl ConnectionClient for Connection {
     }
 
     #[cfg(feature = "nightly")]
-    fn start_transaction(&mut self) -> error::Result<Self::Trx<'_>> {
+    fn start_transaction(&mut self) -> crate::Result<Self::Trx<'_>> {
         self.0
             .transaction()
-            .map_err(|_| error::PersistenceError::UpgradeToTransaction)
+            .map_err(|_| crate::Error::UpgradeToTransaction)
             .map(Transaction)
     }
 }
@@ -60,7 +61,7 @@ impl ConnectionClient for Connection {
 /// # Limits
 ///
 /// It doesn't support nested transaction, because the transaction in `rusqlite`
-/// requires DerefMut, which cannot be implemented at the moment. 😣
+/// requires `DerefMut`, which cannot be implemented at the moment. 😣
 pub struct Transaction<'me>(InnerTrx<'me>);
 
 impl<'me> ConnectionClient for Transaction<'me> {
@@ -74,7 +75,7 @@ impl<'me> ConnectionClient for Transaction<'me> {
     }
 
     #[cfg(feature = "nightly")]
-    fn start_transaction(&mut self) -> error::Result<Self::Trx<'_>> {
+    fn start_transaction(&mut self) -> crate::Result<Self::Trx<'_>> {
         // At the moment we cannot implement nested transaction because
         // the transaction in `rusqlite` requires DerefMut, which cannot be
         // implemented yet 😣
@@ -87,14 +88,12 @@ impl<'me> ConnectionClient for Transaction<'me> {
 }
 
 impl TransactionClient for Transaction<'_> {
-    fn commit(self) -> error::Result<()> {
-        self.0
-            .commit()
-            .map_err(|_| error::PersistenceError::CommitTransaction)
+    fn commit(self) -> crate::Result<()> {
+        self.0.commit().map_err(|_| crate::Error::CommitTransaction)
     }
-    fn rollback(self) -> error::Result<()> {
+    fn rollback(self) -> crate::Result<()> {
         self.0
             .rollback()
-            .map_err(|_| error::PersistenceError::RollbackTransaction)
+            .map_err(|_| crate::Error::RollbackTransaction)
     }
 }

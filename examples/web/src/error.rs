@@ -1,4 +1,3 @@
-use ood_persistence::error::PersistenceError;
 use std::error;
 use std::fmt;
 
@@ -8,7 +7,7 @@ pub type ApiResult<T> = Result<T, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    PersistenceError(PersistenceError),
+    PersistenceError(ood_persistence::Error),
     Rest(RestKind),
     Serde(serde_json::Error),
 }
@@ -25,8 +24,8 @@ impl fmt::Display for Error {
 
 impl std::error::Error for Error {}
 
-impl From<PersistenceError> for Error {
-    fn from(err: PersistenceError) -> Self {
+impl From<ood_persistence::Error> for Error {
+    fn from(err: ood_persistence::Error) -> Self {
         Self::PersistenceError(err)
     }
 }

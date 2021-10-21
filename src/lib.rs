@@ -28,7 +28,7 @@
 //! See examples directory.
 //!
 #![forbid(unsafe_code, non_ascii_idents)]
-#![deny(clippy::all)]
+#![deny(clippy::pedantic)]
 #![warn(missing_docs)]
 #![cfg_attr(feature = "nightly", feature(generic_associated_types))]
 
@@ -87,3 +87,5 @@ pub mod r2d2_sqlite;
 /// This module contains implementations for errors and result, that this
 /// crate uses
 pub mod error;
+
+pub use error::{Error, Result};
