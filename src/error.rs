@@ -13,6 +13,10 @@ use r2d2_sqlite::rusqlite::Error as RusqliteError;
 /// Use this type in your repository or in something else that implements methods for your persistence.
 pub type Result<T> = std::result::Result<T, Error>;
 
+#[deprecated]
+#[allow(clippy::module_name_repetitions)]
+pub use Error as PersistenceError;
+
 /// All supported kinds of persistence error
 #[derive(Debug)]
 pub enum Error {
