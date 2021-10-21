@@ -30,3 +30,8 @@ In stable rust channel you can use only connection interface, but if you use nig
 ## Usage
 
 See examples directory.
+
+
+## Contributors
+
+[pleshevskiy](https://github.com/pleshevskiy) (Dmitriy Pleshevskiy) – creator, maintainer.
