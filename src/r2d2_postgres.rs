@@ -91,7 +91,7 @@ impl<'me> ConnectionClient for Transaction<'me> {
     fn start_transaction(&mut self) -> crate::Result<Self::Trx<'_>> {
         self.0
             .transaction()
-            .map_err(|_| crate::Error::UpgradeToTransaction)
+            .map_err(|_| crate::Error::UpgradeToNestedTransaction)
             .map(Transaction)
     }
 }

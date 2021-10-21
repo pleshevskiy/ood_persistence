@@ -97,7 +97,7 @@ impl<'me> ConnectionClient for Transaction<'me> {
         self.0
             .transaction()
             .await
-            .map_err(|_| crate::Error::UpgradeToTransaction)
+            .map_err(|_| crate::Error::UpgradeToNestedTransaction)
             .map(Transaction)
     }
 }

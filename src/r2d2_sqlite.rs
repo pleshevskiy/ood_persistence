@@ -76,9 +76,9 @@ impl<'me> ConnectionClient for Transaction<'me> {
     #[cfg(feature = "nightly")]
     fn start_transaction(&mut self) -> crate::Result<Self::Trx<'_>> {
         // At the moment we cannot implement nested transaction because
-        // the transaction in `rusqlite` requires DerefMut, which cannot be
-        // implemented yet 😣
-        unimplemented!()
+        // the transaction in `rusqlite` 😣 We need to implement
+        // our box for transaction if we want to use it here.
+        Err(crate::Error::UpgradeToNestedTransaction)
         // self.0
         //     .transaction()
         //     .map_err(|_| error::PersistenceError::UpgradeToTransaction)

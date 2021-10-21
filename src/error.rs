@@ -25,6 +25,9 @@ pub enum Error {
     /// Returns if we cannot upgrade connection to transaction.
     #[cfg(feature = "nightly")]
     UpgradeToTransaction,
+    /// Returns if we cannot upgrade transaction to a nested one.
+    #[cfg(feature = "nightly")]
+    UpgradeToNestedTransaction,
     /// Returns if we cannot commit transaction.
     #[cfg(feature = "nightly")]
     CommitTransaction,
@@ -41,6 +44,10 @@ impl fmt::Display for Error {
             Error::GetConnection => f.write_str("Cannot get connection"),
             #[cfg(feature = "nightly")]
             Error::UpgradeToTransaction => f.write_str("Cannot upgrade connection to transaction"),
+            #[cfg(feature = "nightly")]
+            Error::UpgradeToNestedTransaction => {
+                f.write_str("Cannot upgrade transaction to a nested one")
+            }
             #[cfg(feature = "nightly")]
             Error::CommitTransaction => f.write_str("Cannot commit changes of transaction"),
             #[cfg(feature = "nightly")]
